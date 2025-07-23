@@ -31,6 +31,16 @@ class FinancialGoal extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = [
+        'current_amount',
+        'progress_percentage',
+        'expected_progress_percentage',
+        'formatted_start_amount',
+        'formatted_target_amount',
+        'formatted_expected_amount',
+        'formatted_current_amount',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

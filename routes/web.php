@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FinancialGoalController;
+use App\Services\FinancialGoalService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,7 +10,34 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    $goalService = app(FinancialGoalService::class);
+    $user = auth()->user();
+    $currentYear = date('Y');
+    
+    // Get current year summary
+    $summary = $goalService->getYearlySummary($user, $currentYear);
+    
+    // Get recent goals (last 3 goals)
+    $recentGoals = $user->financialGoals()
+        ->with(['currency', 'category'])
+        ->orderBy('created_at', 'desc')
+        ->limit(3)
+        ->get();
+    
+    // Calculate dashboard stats
+    $stats = [
+        'active_goals_count' => $summary['active_goals_count'],
+        'average_progress' => $summary['average_progress'],
+        'total_saved' => $recentGoals->sum(function($goal) {
+            return $goal->current_amount ?? $goal->start_amount;
+        }),
+        'monthly_growth' => 0 // This would need more complex calculation
+    ];
+    
+    return Inertia::render('Dashboard', [
+        'stats' => $stats,
+        'recentGoals' => $recentGoals
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Financial Goals Routes

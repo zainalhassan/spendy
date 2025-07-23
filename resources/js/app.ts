@@ -5,10 +5,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
-import { initializeTheme } from './composables/useAppearance';
 
 // PrimeVue imports
 import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import 'primeicons/primeicons.css';
 
 // Pinia imports
@@ -25,10 +25,14 @@ createInertiaApp({
         app.use(plugin)
            .use(ZiggyVue)
            .use(PrimeVue, {
-               unstyled: false,
-               pt: {
-                   // You can add custom styling here if needed
-               }
+               theme: {
+                   preset: Aura,
+                   options: {
+                       prefix: 'p',
+                       darkModeSelector: '.dark',
+                       cssLayer: false
+                   }
+               },
            })
            .use(createPinia())
            .mount(el);
@@ -37,6 +41,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-// This will set light / dark mode on page load...
-initializeTheme();

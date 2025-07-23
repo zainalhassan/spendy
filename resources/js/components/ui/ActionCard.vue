@@ -11,7 +11,7 @@
         </div>
         <i :class="`pi pi-arrow-right text-gray-400 group-hover:text-${arrowColor} transition-colors duration-300 group-hover:translate-x-1`"></i>
       </div>
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ title }}</h3>
+      <h3 class="text-xl font-bold mb-2">{{ title }}</h3>
       <p class="text-gray-600 dark:text-gray-300 mb-4">{{ description }}</p>
       <div :class="`flex items-center text-${textColor} dark:text-${textColorDark} font-medium group-hover:text-${textColorHover} dark:group-hover:text-${textColorHoverDark} transition-colors duration-300`">
         <span>{{ actionText }}</span>

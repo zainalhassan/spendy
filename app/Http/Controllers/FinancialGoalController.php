@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateFinancialGoal;
 use App\Actions\UpdateGoalProgress;
+use App\Http\Requests\StoreFinancialGoalRequest;
+use App\Http\Requests\UpdateFinancialGoalRequest;
+use App\Http\Requests\UpdateGoalProgressRequest;
 use App\Models\FinancialGoal;
 use App\Models\Currency;
 use App\Models\Category;
@@ -26,6 +29,7 @@ class FinancialGoalController extends Controller
         $summary = $this->goalService->getYearlySummary(auth()->user(), $year);
         
         return Inertia::render('FinancialGoals/Index', [
+            'goals' => $summary['goals'],
             'summary' => $summary,
             'currentYear' => $year,
         ]);
@@ -39,9 +43,9 @@ class FinancialGoalController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreFinancialGoalRequest $request)
     {
-        $goal = $this->createGoalAction->execute(auth()->user(), $request->all());
+        $goal = $this->createGoalAction->execute(auth()->user(), $request->validated());
         
         return redirect()->route('financial-goals.show', $goal)
             ->with('success', 'Financial goal created successfully!');
@@ -75,14 +79,14 @@ class FinancialGoalController extends Controller
         ]);
     }
 
-    public function update(Request $request, FinancialGoal $financialGoal)
+    public function update(UpdateFinancialGoalRequest $request, FinancialGoal $financialGoal)
     {
         // Check if the goal belongs to the authenticated user
         if ($financialGoal->user_id !== auth()->id()) {
             abort(404);
         }
 
-        $this->goalService->updateGoal($financialGoal, $request->all());
+        $this->goalService->updateGoal($financialGoal, $request->validated());
         
         return redirect()->route('financial-goals.show', $financialGoal)
             ->with('success', 'Financial goal updated successfully!');
@@ -101,14 +105,14 @@ class FinancialGoalController extends Controller
             ->with('success', 'Financial goal deleted successfully!');
     }
 
-    public function updateProgress(Request $request, FinancialGoal $financialGoal)
+    public function updateProgress(UpdateGoalProgressRequest $request, FinancialGoal $financialGoal)
     {
         // Check if the goal belongs to the authenticated user
         if ($financialGoal->user_id !== auth()->id()) {
             abort(404);
         }
 
-        $progress = $this->updateProgressAction->execute($financialGoal, $request->all());
+        $progress = $this->updateProgressAction->execute($financialGoal, $request->validated());
         
         return back()->with('success', 'Progress updated successfully!');
     }

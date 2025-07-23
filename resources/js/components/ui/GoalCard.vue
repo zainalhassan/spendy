@@ -42,36 +42,37 @@
       </div>
     </div>
     
-    <!-- Content -->
-    <div class="p-6">
-      <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-xl">
-          <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">Current</div>
-          <div class="font-bold text-gray-900 dark:text-white">{{ goal.formatted_current_amount }}</div>
+    <!-- Footer -->
+    <div class="p-6 bg-gray-50 dark:bg-slate-700">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-sm">
+          <span class="text-gray-600 dark:text-gray-300">Current:</span>
+          <span class="font-semibold ml-1 text-gray-900 dark:text-white">{{ formatCurrency(goal.current_amount, goal.currency) }}</span>
         </div>
-        <div class="text-center p-3 bg-gray-50 dark:bg-slate-700 rounded-xl">
-          <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">Target</div>
-          <div class="font-bold text-gray-900 dark:text-white">{{ goal.formatted_target_amount }}</div>
+        <div class="text-sm">
+          <span class="text-gray-600 dark:text-gray-300">Target:</span>
+          <span class="font-semibold ml-1 text-gray-900 dark:text-white">{{ formatCurrency(goal.target_amount, goal.currency) }}</span>
         </div>
       </div>
       
-      <!-- Footer -->
-      <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-700">
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ goal.year }}</span>
-        <div class="flex gap-2">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-gray-500 dark:text-gray-400">
+          {{ goal.year }}
+        </div>
+        <div class="flex items-center gap-2">
           <Button
             icon="pi pi-eye"
-            size="small"
             text
-            class="p-button-text text-blue-600 dark:text-blue-400"
-            @click.stop="$emit('view')"
+            size="small"
+            class="p-button-text text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            @click.stop="$emit('view', goal)"
           />
           <Button
             icon="pi pi-pencil"
-            size="small"
             text
-            class="p-button-text text-gray-600 dark:text-gray-400"
-            @click.stop="$emit('edit')"
+            size="small"
+            class="p-button-text text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+            @click.stop="$emit('edit', goal)"
           />
         </div>
       </div>
@@ -80,10 +81,11 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 
-defineProps({
+const props = defineProps({
   goal: {
     type: Object,
     required: true
@@ -91,4 +93,33 @@ defineProps({
 })
 
 defineEmits(['click', 'view', 'edit'])
+
+const formatCurrency = (amount, currency) => {
+  if (!currency) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount)
+  }
+
+  // Use currency object if available
+  if (currency.symbol && currency.decimals !== undefined) {
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: currency.decimals,
+      maximumFractionDigits: currency.decimals
+    }).format(amount)
+    
+    return currency.symbol + formatted
+  }
+
+  // Fallback to currency code
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.code || 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount)
+}
 </script> 
