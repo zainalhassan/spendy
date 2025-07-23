@@ -42,7 +42,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'success', 'warning', 'danger'].includes(value)
+    validator: (value) => ['primary', 'secondary', 'success', 'warning', 'danger'].includes(value)
   }
 })
 
@@ -57,6 +57,15 @@ const variantConfig = {
     textColorDark: 'blue-400',
     textColorHover: 'blue-700',
     textColorHoverDark: 'blue-300'
+  },
+  secondary: {
+    gradientOverlay: 'from-gray-500/5 to-gray-600/5',
+    iconGradient: 'from-gray-500 to-gray-600',
+    arrowColor: 'gray-500',
+    textColor: 'gray-600',
+    textColorDark: 'gray-400',
+    textColorHover: 'gray-700',
+    textColorHoverDark: 'gray-300'
   },
   success: {
     gradientOverlay: 'from-green-500/5 to-emerald-500/5',
@@ -87,6 +96,6 @@ const variantConfig = {
   }
 }
 
-const config = variantConfig[props.variant]
+const config = variantConfig[props.variant] || variantConfig.primary
 const { gradientOverlay, iconGradient, arrowColor, textColor, textColorDark, textColorHover, textColorHoverDark } = config
 </script> 

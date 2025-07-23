@@ -69,10 +69,10 @@ const formatCurrencyWithSymbol = (amount, currency) => {
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="min-h-screen">
+        <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
             <div class="flex h-full flex-1 flex-col gap-8 p-6 lg:p-8">
                 <!-- Hero Section -->
-                <Card class="relative overflow-hidden border-0 shadow-none">
+                <Card class="relative overflow-hidden border-0 shadow-xl">
                     <template #content>
                         <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 lg:p-12">
                             <div class="absolute inset-0 bg-black/10"></div>
@@ -116,7 +116,7 @@ const formatCurrencyWithSymbol = (amount, currency) => {
                 </Card>
 
                 <!-- Action Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <ActionCard
                         title="View Goals"
                         description="Track your financial goals and monitor progress"
@@ -134,39 +134,26 @@ const formatCurrencyWithSymbol = (amount, currency) => {
                         variant="success"
                         @click="navigateToCreate"
                     />
-                    
-                    <ActionCard
-                        title="Track Progress"
-                        description="Update monthly progress and see trends"
-                        icon="pi pi-chart-bar"
-                        action-text="View Analytics"
-                        variant="warning"
-                        @click="navigateToGoals"
-                    />
                 </div>
 
-                <!-- Recent Activity & Getting Started -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Goals & Getting Started -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Recent Goals -->
-                    <Card class="shadow-lg border-0">
+                    <Card class="shadow-xl border-0 overflow-hidden">
+                        <template #header>
+                            <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                    <i class="pi pi-clock text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Goals</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Your latest financial goals</p>
+                                </div>
+                            </div>
+                        </template>
                         <template #content>
                             <div class="p-6">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Goals</h3>
-                                    <Button
-                                        label="View All"
-                                        text
-                                        class="p-button-text text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                                        @click="navigateToGoals"
-                                    />
-                                </div>
-                                
-                                <div v-if="recentGoals.length === 0" class="text-center py-8">
-                                    <i class="pi pi-target text-4xl text-gray-300 mb-4"></i>
-                                    <p class="text-gray-500 dark:text-gray-400">No goals yet. Create your first goal to get started!</p>
-                                </div>
-                                
-                                <div v-else class="space-y-4">
+                                <div v-if="recentGoals.length > 0" class="space-y-4">
                                     <div 
                                         v-for="goal in recentGoals" 
                                         :key="goal.id" 
@@ -193,16 +180,31 @@ const formatCurrencyWithSymbol = (amount, currency) => {
                                         </div>
                                     </div>
                                 </div>
+                                <div v-else class="text-center py-8">
+                                    <div class="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="pi pi-target text-2xl text-gray-400 dark:text-gray-500"></i>
+                                    </div>
+                                    <p class="text-gray-600 dark:text-gray-300">No goals yet. Create your first goal to get started!</p>
+                                </div>
                             </div>
                         </template>
                     </Card>
 
                     <!-- Getting Started -->
-                    <Card class="shadow-lg border-0">
+                    <Card class="shadow-xl border-0 overflow-hidden">
+                        <template #header>
+                            <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                                    <i class="pi pi-rocket text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Getting Started</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Quick guide to financial success</p>
+                                </div>
+                            </div>
+                        </template>
                         <template #content>
                             <div class="p-6">
-                                <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">Getting Started</h3>
-                                
                                 <div class="space-y-6">
                                     <div class="flex items-start gap-4">
                                         <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-sm">

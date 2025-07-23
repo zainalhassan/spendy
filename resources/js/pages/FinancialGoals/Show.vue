@@ -1,285 +1,273 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
-    <div class="p-6 lg:p-8">
-      <!-- Header Section -->
-      <div class="mb-8">
-        <div class="flex items-center gap-4 mb-6">
-          <Button
-            icon="pi pi-arrow-left"
-            text
-            @click="goBack"
-          />
-          <div class="flex-1">
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">{{ goal.goal.name }}</h1>
-            <p class="text-gray-600 dark:text-gray-300 text-lg">{{ goal.goal.description || 'No description provided' }}</p>
-          </div>
-          <div class="flex items-center gap-3">
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
+      <div class="p-6 lg:p-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+          <div class="flex items-center gap-4 mb-6">
             <Button
-              icon="pi pi-pencil"
+              icon="pi pi-arrow-left"
               text
-              @click="navigateToEdit"
-              v-tooltip.top="'Edit Goal'"
+              @click="goBack"
             />
-            <Button
-              icon="pi pi-trash"
-              text
-              @click="confirmDelete"
-              severity="danger"
-              v-tooltip.top="'Delete Goal'"
-            />
+            <div class="flex-1">
+              <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">{{ goal.goal.name }}</h1>
+              <p class="text-gray-600 dark:text-gray-300 text-lg">{{ goal.goal.description || 'No description provided' }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <Button
+                icon="pi pi-pencil"
+                text
+                @click="navigateToEdit"
+                v-tooltip.top="'Edit Goal'"
+              />
+              <Button
+                icon="pi pi-trash"
+                text
+                @click="confirmDelete"
+                severity="danger"
+                v-tooltip.top="'Delete Goal'"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-8">
-          <!-- Progress Overview Card -->
-          <Card class="shadow-xl border-0 overflow-hidden">
-            <template #content>
-              <div class="p-8">
-                <!-- Progress Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl">
-                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                      {{ goal.goal.formatted_current_amount }}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Main Content -->
+          <div class="lg:col-span-2 space-y-8">
+            <!-- Progress Overview Card -->
+            <Card class="shadow-xl border-0 overflow-hidden">
+              <template #content>
+                <div class="p-8">
+                  <!-- Progress Stats Grid -->
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl">
+                      <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                        {{ goal.goal.formatted_current_amount }}
+                      </div>
+                      <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Current Amount</div>
                     </div>
-                    <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Current Amount</div>
-                  </div>
-                  
-                  <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl">
-                    <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                      {{ goal.goal.formatted_target_amount }}
+                    
+                    <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-2xl">
+                      <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                        {{ goal.goal.formatted_target_amount }}
+                      </div>
+                      <div class="text-sm font-medium text-green-700 dark:text-green-300">Target Amount</div>
                     </div>
-                    <div class="text-sm font-medium text-green-700 dark:text-green-300">Target Amount</div>
-                  </div>
-                  
-                  <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl">
-                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                      {{ goal.progress_percentage.toFixed(1) }}%
+                    
+                    <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl">
+                      <div class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                        {{ goal.progress_percentage.toFixed(1) }}%
+                      </div>
+                      <div class="text-sm font-medium text-purple-700 dark:text-purple-300">Progress</div>
                     </div>
-                    <div class="text-sm font-medium text-purple-700 dark:text-purple-300">Progress</div>
                   </div>
-                </div>
 
-                <!-- Progress Bars -->
-                <div class="space-y-6">
-                  <!-- Main Progress -->
-                  <div>
-                    <div class="flex justify-between items-center mb-3">
-                      <span class="text-lg font-semibold text-gray-900 dark:text-white">Your Progress</span>
-                      <span class="text-lg font-bold text-gray-900 dark:text-white">{{ goal.progress_percentage.toFixed(1) }}%</span>
+                  <!-- Progress Bars -->
+                  <div class="space-y-6">
+                    <!-- Main Progress -->
+                    <div>
+                      <div class="flex justify-between items-center mb-3">
+                        <span class="text-lg font-semibold text-gray-900 dark:text-white">Your Progress</span>
+                        <span class="text-lg font-bold text-gray-900 dark:text-white">{{ goal.progress_percentage.toFixed(1) }}%</span>
+                      </div>
+                      <div class="relative">
+                        <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
+                          <div 
+                            class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out"
+                            :style="{ width: goal.progress_percentage + '%' }"
+                          ></div>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                      </div>
                     </div>
-                    <div class="relative">
-                      <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
+
+                    <!-- Expected Progress -->
+                    <div v-if="goal.expected_percentage > 0">
+                      <div class="flex justify-between items-center mb-3">
+                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-300">Expected Progress</span>
+                        <span class="text-lg font-bold text-gray-700 dark:text-gray-300">{{ goal.expected_percentage.toFixed(1) }}%</span>
+                      </div>
+                      <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-3">
                         <div 
-                          class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out"
-                          :style="{ width: goal.progress_percentage + '%' }"
+                          class="bg-gradient-to-r from-gray-400 to-gray-500 h-3 rounded-full"
+                          :style="{ width: goal.expected_percentage + '%' }"
                         ></div>
                       </div>
-                      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                     </div>
                   </div>
 
-                  <!-- Expected Progress -->
-                  <div v-if="goal.expected_percentage > 0">
-                    <div class="flex justify-between items-center mb-3">
-                      <span class="text-lg font-semibold text-gray-700 dark:text-gray-300">Expected Progress</span>
-                      <span class="text-lg font-bold text-gray-700 dark:text-gray-300">{{ goal.expected_percentage.toFixed(1) }}%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-3">
-                      <div 
-                        class="bg-gradient-to-r from-gray-400 to-gray-500 h-3 rounded-full"
-                        :style="{ width: goal.expected_percentage + '%' }"
-                      ></div>
+                  <!-- Status Indicator -->
+                  <div class="mt-8 text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-full">
+                      <i class="pi pi-info-circle text-blue-600 dark:text-blue-400"></i>
+                      <span class="font-semibold text-blue-800 dark:text-blue-300">On Track</span>
                     </div>
                   </div>
                 </div>
+              </template>
+            </Card>
 
-                <!-- Status Indicator -->
-                <div class="mt-6 flex items-center justify-center">
-                  <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full" 
-                       :class="{
-                         'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': goal.is_ahead_of_schedule,
-                         'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': goal.is_behind_schedule,
-                         'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300': !goal.is_ahead_of_schedule && !goal.is_behind_schedule
-                       }">
-                    <i :class="{
-                      'pi pi-check-circle text-green-600 dark:text-green-400': goal.is_ahead_of_schedule,
-                      'pi pi-exclamation-triangle text-yellow-600 dark:text-yellow-400': goal.is_behind_schedule,
-                      'pi pi-info-circle text-blue-600 dark:text-blue-400': !goal.is_ahead_of_schedule && !goal.is_behind_schedule
-                    }"></i>
-                    <span class="font-semibold">
-                      {{ goal.is_ahead_of_schedule ? 'Ahead of Schedule' : goal.is_behind_schedule ? 'Behind Schedule' : 'On Track' }}
-                    </span>
+            <!-- Progress History Card -->
+            <Card class="shadow-xl border-0 overflow-hidden">
+              <template #header>
+                <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-700">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                      <i class="pi pi-chart-line text-white text-lg"></i>
+                    </div>
+                    <div>
+                      <h3 class="text-xl font-bold text-gray-900 dark:text-white">Progress History</h3>
+                      <p class="text-sm text-gray-600 dark:text-gray-300">Track your monthly progress updates</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </template>
-          </Card>
-
-          <!-- Progress History Card -->
-          <Card class="shadow-xl border-0 overflow-hidden">
-            <template #header>
-              <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-700">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                    <i class="pi pi-chart-line text-white text-lg"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Progress History</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">Track your monthly progress updates</p>
-                  </div>
-                </div>
-                <Button
-                  label="Update Progress"
-                  icon="pi pi-plus"
-                  @click="showProgressDialog = true"
-                  severity="primary"
-                />
-              </div>
-            </template>
-            <template #content>
-              <div class="p-6">
-                <div v-if="goal.monthly_progress.length === 0" class="text-center py-12">
-                  <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="pi pi-chart-line text-3xl text-gray-400 dark:text-gray-500"></i>
-                  </div>
-                  <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No progress updates yet</h4>
-                  <p class="text-gray-600 dark:text-gray-300 mb-6">Add your first progress update to start tracking your journey</p>
                   <Button
-                    label="Add First Update"
+                    label="Update Progress"
                     icon="pi pi-plus"
                     @click="showProgressDialog = true"
                     severity="primary"
                   />
                 </div>
-                <div v-else class="space-y-4">
-                  <div
-                    v-for="progress in goal.monthly_progress"
-                    :key="progress.id"
-                    class="group p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl hover:from-gray-100 hover:to-gray-200 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 border border-gray-200 dark:border-slate-600"
-                  >
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                          <span class="text-white font-bold text-sm">{{ getMonthName(progress.month).substring(0, 3) }}</span>
+              </template>
+              <template #content>
+                <div class="p-6">
+                  <div v-if="goal.monthly_progress.length === 0" class="text-center py-12">
+                    <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <i class="pi pi-chart-line text-3xl text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No progress updates yet</h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Add your first progress update to start tracking your journey</p>
+                    <Button
+                      label="Add First Update"
+                      icon="pi pi-plus"
+                      @click="showProgressDialog = true"
+                      severity="primary"
+                    />
+                  </div>
+                  <div v-else class="space-y-4">
+                    <div
+                      v-for="progress in goal.monthly_progress"
+                      :key="progress.id"
+                      class="group p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl hover:from-gray-100 hover:to-gray-200 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 border border-gray-200 dark:border-slate-600"
+                    >
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">{{ getMonthName(progress.month).substring(0, 3) }}</span>
+                          </div>
+                          <div>
+                            <div class="font-bold text-gray-900 dark:text-white text-lg">
+                              {{ getMonthName(progress.month) }} {{ progress.year }}
+                            </div>
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                              {{ formatProgressAmount(progress.current_amount) }}
+                            </div>
+                            <div v-if="progress.notes" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic">
+                              "{{ progress.notes }}"
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <div class="font-bold text-gray-900 dark:text-white text-lg">
-                            {{ getMonthName(progress.month) }} {{ progress.year }}
+                        <div class="text-right">
+                          <div class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ formatDate(progress.created_at) }}
                           </div>
-                          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {{ formatProgressAmount(progress.current_amount) }}
-                          </div>
-                          <div v-if="progress.notes" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic">
-                            "{{ progress.notes }}"
-                          </div>
-                        </div>
-                      </div>
-                      <div class="text-right">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                          {{ formatDate(progress.created_at) }}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </template>
-          </Card>
-        </div>
+              </template>
+            </Card>
+          </div>
 
-        <!-- Sidebar -->
-        <div class="space-y-8">
-          <!-- Goal Info Card -->
-          <Card class="shadow-xl border-0 overflow-hidden">
-            <template #header>
-              <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
-                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                  <i class="pi pi-info-circle text-white text-lg"></i>
-                </div>
-                <div>
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-white">Goal Details</h3>
-                  <p class="text-sm text-gray-600 dark:text-gray-300">Goal information and settings</p>
-                </div>
-              </div>
-            </template>
-            <template #content>
-              <div class="p-6 space-y-6">
-                <div>
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Category</label>
-                  <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full">
-                    <i :class="goal.goal.category.icon" class="text-green-600 dark:text-green-400"></i>
-                    <span class="font-semibold text-green-800 dark:text-green-300">{{ goal.goal.category.display_name }}</span>
+          <!-- Sidebar -->
+          <div class="space-y-8">
+            <!-- Goal Info Card -->
+            <Card class="shadow-xl border-0 overflow-hidden">
+              <template #header>
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
+                  <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-info-circle text-white text-lg"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Goal Details</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Goal information and settings</p>
                   </div>
                 </div>
-                
-                <div>
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Year</label>
-                  <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.year }}</div>
-                </div>
-                
-                <div>
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Starting Amount</label>
-                  <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_start_amount }}</div>
-                </div>
-                
-                <div v-if="goal.goal.expected_amount">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Expected Amount</label>
-                  <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_expected_amount }}</div>
-                </div>
+              </template>
+              <template #content>
+                <div class="p-6 space-y-6">
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Category</label>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full">
+                      <i :class="goal.goal.category.icon" class="text-green-600 dark:text-green-400"></i>
+                      <span class="font-semibold text-green-800 dark:text-green-300">{{ goal.goal.category.display_name }}</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Year</label>
+                    <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.year }}</div>
+                  </div>
+                  
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Starting Amount</label>
+                    <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_start_amount }}</div>
+                  </div>
+                  
+                  <div v-if="goal.goal.expected_amount">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Expected Amount</label>
+                    <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_expected_amount }}</div>
+                  </div>
 
-                <div>
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Currency</label>
-                  <div class="flex items-center gap-2">
-                    <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.currency.name }}</span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">({{ goal.goal.currency.code }})</span>
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Currency</label>
+                    <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.currency.name }}</div>
                   </div>
                 </div>
-              </div>
-            </template>
-          </Card>
+              </template>
+            </Card>
 
-          <!-- Quick Actions Card -->
-          <Card class="shadow-xl border-0 overflow-hidden">
-            <template #header>
-              <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
-                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
-                  <i class="pi pi-bolt text-white text-lg"></i>
+            <!-- Quick Actions Card -->
+            <Card class="shadow-xl border-0 overflow-hidden">
+              <template #header>
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-bolt text-white text-lg"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Quick Actions</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Manage your goal</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-white">Quick Actions</h3>
-                  <p class="text-sm text-gray-600 dark:text-gray-300">Manage your goal</p>
+              </template>
+              <template #content>
+                <div class="p-6 space-y-4">
+                  <Button
+                    label="Update Progress"
+                    icon="pi pi-plus"
+                    @click="showProgressDialog = true"
+                    severity="primary"
+                    class="w-full"
+                  />
+                  <Button
+                    label="Edit Goal"
+                    icon="pi pi-pencil"
+                    @click="navigateToEdit"
+                    severity="secondary"
+                    class="w-full"
+                  />
+                  <Button
+                    label="Delete Goal"
+                    icon="pi pi-trash"
+                    @click="confirmDelete"
+                    severity="danger"
+                    class="w-full"
+                  />
                 </div>
-              </div>
-            </template>
-            <template #content>
-              <div class="p-6 space-y-4">
-                <Button
-                  label="Update Progress"
-                  icon="pi pi-plus"
-                  @click="showProgressDialog = true"
-                  severity="primary"
-                  class="w-full"
-                />
-                <Button
-                  label="Edit Goal"
-                  icon="pi pi-pencil"
-                  @click="navigateToEdit"
-                  severity="secondary"
-                  class="w-full"
-                />
-                <Button
-                  label="Delete Goal"
-                  icon="pi pi-trash"
-                  @click="confirmDelete"
-                  severity="danger"
-                  class="w-full"
-                />
-              </div>
-            </template>
-          </Card>
+              </template>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
@@ -357,15 +345,19 @@
 
         <div class="space-y-3">
           <label for="notes" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-            Notes
+            Notes (Optional)
           </label>
           <Textarea
             id="notes"
             v-model="progressForm.notes"
-            placeholder="Optional notes about this progress update..."
+            placeholder="Add any notes about this progress update..."
             rows="3"
             class="w-full"
+            :invalid="!!progressErrors.notes"
           />
+          <small v-if="progressErrors.notes" class="text-red-500 font-medium">
+            {{ progressErrors.notes }}
+          </small>
         </div>
       </form>
 
@@ -421,7 +413,7 @@
         </div>
       </template>
     </Dialog>
-  </div>
+  </AppLayout>
 </template>
 
 <script setup>
@@ -434,6 +426,7 @@ import InputNumber from 'primevue/inputnumber'
 import Dropdown from 'primevue/dropdown'
 import Textarea from 'primevue/textarea'
 import Tooltip from 'primevue/tooltip'
+import AppLayout from '@/layouts/AppLayout.vue'
 
 const props = defineProps({
   goal: {
@@ -441,6 +434,21 @@ const props = defineProps({
     required: true
   }
 })
+
+const breadcrumbs = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+  },
+  {
+    title: 'Financial Goals',
+    href: '/financial-goals',
+  },
+  {
+    title: props.goal.goal.name,
+    href: `/financial-goals/${props.goal.goal.id}`,
+  },
+]
 
 const showProgressDialog = ref(false)
 const showDeleteDialog = ref(false)

@@ -1,185 +1,218 @@
 <template>
-  <div class="min-h-screen">
-    <div class="p-6 lg:p-8 max-w-4xl mx-auto">
-      <!-- Header -->
-      <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-          <Button
-            icon="pi pi-arrow-left"
-            text
-            @click="goBack"
-            class="p-button-text text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-          />
-          <div>
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">Edit Goal</h1>
-            <p class="text-gray-600 dark:text-gray-300 text-lg mt-2">Update your financial goal details</p>
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
+      <div class="p-6 lg:p-8">
+        <!-- Header -->
+        <div class="mb-8">
+          <div class="flex items-center gap-4 mb-6">
+            <Button
+              icon="pi pi-arrow-left"
+              text
+              @click="goBack"
+            />
+            <div>
+              <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">Edit Goal</h1>
+              <p class="text-gray-600 dark:text-gray-300 text-lg">Update your financial goal details</p>
+            </div>
           </div>
         </div>
+
+        <!-- Form Card -->
+        <Card class="shadow-xl border-0 overflow-hidden max-w-4xl mx-auto">
+          <template #content>
+            <div class="p-8">
+              <form @submit.prevent="submitForm" class="space-y-8">
+                <!-- Basic Information -->
+                <div class="space-y-6">
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-600 pb-3">Basic Information</h3>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                      <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Goal Name <span class="text-red-500">*</span>
+                      </label>
+                      <InputText
+                        id="name"
+                        v-model="form.name"
+                        placeholder="e.g., New Car Fund"
+                        class="w-full text-lg"
+                        :invalid="!!errors.name"
+                      />
+                      <small v-if="errors.name" class="text-red-500 font-medium">
+                        {{ errors.name }}
+                      </small>
+                    </div>
+
+                    <div class="space-y-3">
+                      <label for="category_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Category <span class="text-red-500">*</span>
+                      </label>
+                      <Dropdown
+                        id="category_id"
+                        v-model="form.category_id"
+                        :options="categories"
+                        option-label="display_name"
+                        option-value="id"
+                        placeholder="Select category"
+                        class="w-full"
+                        :invalid="!!errors.category_id"
+                      />
+                      <small v-if="errors.category_id" class="text-red-500 font-medium">
+                        {{ errors.category_id }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3">
+                    <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Description
+                    </label>
+                    <Textarea
+                      id="description"
+                      v-model="form.description"
+                      placeholder="Describe your goal and motivation..."
+                      rows="3"
+                      class="w-full"
+                      :invalid="!!errors.description"
+                    />
+                    <small v-if="errors.description" class="text-red-500 font-medium">
+                      {{ errors.description }}
+                    </small>
+                  </div>
+                </div>
+
+                <!-- Financial Details -->
+                <div class="space-y-6">
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-600 pb-3">Financial Details</h3>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-3">
+                      <label for="currency_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Currency <span class="text-red-500">*</span>
+                      </label>
+                      <Dropdown
+                        id="currency_id"
+                        v-model="form.currency_id"
+                        :options="currencies"
+                        option-label="name"
+                        option-value="id"
+                        placeholder="Select currency"
+                        class="w-full"
+                        :invalid="!!errors.currency_id"
+                      />
+                      <small v-if="errors.currency_id" class="text-red-500 font-medium">
+                        {{ errors.currency_id }}
+                      </small>
+                    </div>
+
+                    <div class="space-y-3">
+                      <label for="start_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Starting Amount <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">{{ selectedCurrencySymbol }}</span>
+                        <InputNumber
+                          id="start_amount"
+                          v-model="form.start_amount"
+                          placeholder="0.00"
+                          :min-fraction-digits="selectedCurrencyDecimals"
+                          :max-fraction-digits="selectedCurrencyDecimals"
+                          class="w-full pl-8 text-lg"
+                          :invalid="!!errors.start_amount"
+                        />
+                      </div>
+                      <small v-if="errors.start_amount" class="text-red-500 font-medium">
+                        {{ errors.start_amount }}
+                      </small>
+                    </div>
+
+                    <div class="space-y-3">
+                      <label for="target_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Target Amount <span class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">{{ selectedCurrencySymbol }}</span>
+                        <InputNumber
+                          id="target_amount"
+                          v-model="form.target_amount"
+                          placeholder="0.00"
+                          :min-fraction-digits="selectedCurrencyDecimals"
+                          :max-fraction-digits="selectedCurrencyDecimals"
+                          class="w-full pl-8 text-lg"
+                          :invalid="!!errors.target_amount"
+                        />
+                      </div>
+                      <small v-if="errors.target_amount" class="text-red-500 font-medium">
+                        {{ errors.target_amount }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                      <label for="expected_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Expected Amount (Optional)
+                      </label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">{{ selectedCurrencySymbol }}</span>
+                        <InputNumber
+                          id="expected_amount"
+                          v-model="form.expected_amount"
+                          placeholder="0.00"
+                          :min-fraction-digits="selectedCurrencyDecimals"
+                          :max-fraction-digits="selectedCurrencyDecimals"
+                          class="w-full pl-8 text-lg"
+                          :invalid="!!errors.expected_amount"
+                        />
+                      </div>
+                      <small v-if="errors.expected_amount" class="text-red-500 font-medium">
+                        {{ errors.expected_amount }}
+                      </small>
+                    </div>
+
+                    <div class="space-y-3">
+                      <label for="year" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Target Year <span class="text-red-500">*</span>
+                      </label>
+                      <Dropdown
+                        id="year"
+                        v-model="form.year"
+                        :options="yearOptions"
+                        option-label="label"
+                        option-value="value"
+                        placeholder="Select year"
+                        class="w-full"
+                        :invalid="!!errors.year"
+                      />
+                      <small v-if="errors.year" class="text-red-500 font-medium">
+                        {{ errors.year }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200 dark:border-slate-600">
+                  <Button
+                    label="Cancel"
+                    text
+                    @click="goBack"
+                  />
+                  <Button
+                    type="submit"
+                    label="Update Goal"
+                    icon="pi pi-check"
+                    :loading="processing"
+                    severity="success"
+                  />
+                </div>
+              </form>
+            </div>
+          </template>
+        </Card>
       </div>
-
-      <!-- Form Card -->
-      <Card class="shadow-lg border-0">
-        <template #content>
-          <div class="p-8">
-            <form @submit.prevent="submitForm" class="space-y-8">
-              <!-- Goal Name -->
-              <div class="space-y-3">
-                <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Goal Name <span class="text-red-500">*</span>
-                </label>
-                <InputText
-                  id="name"
-                  v-model="form.name"
-                  placeholder="e.g., Emergency Fund, Car Savings"
-                  class="w-full"
-                  :invalid="!!errors.name"
-                />
-                <small v-if="errors.name" class="text-red-500 font-medium">{{ errors.name }}</small>
-              </div>
-
-              <!-- Category -->
-              <div class="space-y-3">
-                <label for="category_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Category <span class="text-red-500">*</span>
-                </label>
-                <Dropdown
-                  id="category_id"
-                  v-model="form.category_id"
-                  :options="categories"
-                  option-label="name"
-                  option-value="id"
-                  placeholder="Select a category"
-                  class="w-full"
-                  :invalid="!!errors.category_id"
-                />
-                <small v-if="errors.category_id" class="text-red-500 font-medium">{{ errors.category_id }}</small>
-              </div>
-
-              <!-- Currency -->
-              <div class="space-y-3">
-                <label for="currency_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Currency <span class="text-red-500">*</span>
-                </label>
-                <Dropdown
-                  id="currency_id"
-                  v-model="form.currency_id"
-                  :options="currencies"
-                  option-label="name"
-                  option-value="id"
-                  placeholder="Select a currency"
-                  class="w-full"
-                  :invalid="!!errors.currency_id"
-                />
-                <small v-if="errors.currency_id" class="text-red-500 font-medium">{{ errors.currency_id }}</small>
-              </div>
-
-              <!-- Target Amount -->
-              <div class="space-y-3">
-                <label for="target_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Target Amount <span class="text-red-500">*</span>
-                </label>
-                <InputNumber
-                  id="target_amount"
-                  v-model="form.target_amount"
-                  :min-fraction-digits="selectedCurrencyDecimals"
-                  :max-fraction-digits="selectedCurrencyDecimals"
-                  placeholder="0.00"
-                  class="w-full"
-                  :invalid="!!errors.target_amount"
-                />
-                <small v-if="errors.target_amount" class="text-red-500 font-medium">{{ errors.target_amount }}</small>
-              </div>
-
-              <!-- Start Amount -->
-              <div class="space-y-3">
-                <label for="start_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Starting Amount
-                </label>
-                <InputNumber
-                  id="start_amount"
-                  v-model="form.start_amount"
-                  :min-fraction-digits="selectedCurrencyDecimals"
-                  :max-fraction-digits="selectedCurrencyDecimals"
-                  placeholder="0.00"
-                  class="w-full"
-                  :invalid="!!errors.start_amount"
-                />
-                <small v-if="errors.start_amount" class="text-red-500 font-medium">{{ errors.start_amount }}</small>
-              </div>
-
-              <!-- Expected Amount -->
-              <div class="space-y-3">
-                <label for="expected_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Expected Amount (Optional)
-                </label>
-                <InputNumber
-                  id="expected_amount"
-                  v-model="form.expected_amount"
-                  :min-fraction-digits="selectedCurrencyDecimals"
-                  :max-fraction-digits="selectedCurrencyDecimals"
-                  placeholder="0.00"
-                  class="w-full"
-                  :invalid="!!errors.expected_amount"
-                />
-                <small v-if="errors.expected_amount" class="text-red-500 font-medium">{{ errors.expected_amount }}</small>
-                <small class="text-gray-500 dark:text-gray-400">This helps you track if you're on schedule with your goal</small>
-              </div>
-
-              <!-- Year -->
-              <div class="space-y-3">
-                <label for="year" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Year <span class="text-red-500">*</span>
-                </label>
-                <Dropdown
-                  id="year"
-                  v-model="form.year"
-                  :options="yearOptions"
-                  option-label="label"
-                  option-value="value"
-                  placeholder="Select Year"
-                  class="w-full"
-                  :invalid="!!errors.year"
-                />
-                <small v-if="errors.year" class="text-red-500 font-medium">{{ errors.year }}</small>
-              </div>
-
-              <!-- Description -->
-              <div class="space-y-3">
-                <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Description (Optional)
-                </label>
-                <Textarea
-                  id="description"
-                  v-model="form.description"
-                  placeholder="Add any additional details about your goal..."
-                  rows="4"
-                  class="w-full"
-                  :invalid="!!errors.description"
-                />
-                <small v-if="errors.description" class="text-red-500 font-medium">{{ errors.description }}</small>
-              </div>
-
-              <!-- Form Actions -->
-              <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200 dark:border-slate-600">
-                <Button
-                  label="Cancel"
-                  text
-                  @click="goBack"
-                />
-                <Button
-                  type="submit"
-                  label="Update Goal"
-                  icon="pi pi-check"
-                  :loading="processing"
-                  severity="success"
-                />
-              </div>
-            </form>
-          </div>
-        </template>
-      </Card>
     </div>
-  </div>
+  </AppLayout>
 </template>
 
 <script setup>
@@ -191,6 +224,7 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Dropdown from 'primevue/dropdown'
 import Textarea from 'primevue/textarea'
+import AppLayout from '@/layouts/AppLayout.vue'
 
 const props = defineProps({
   goal: {
@@ -215,6 +249,25 @@ const props = defineProps({
   }
 })
 
+const breadcrumbs = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+  },
+  {
+    title: 'Financial Goals',
+    href: '/financial-goals',
+  },
+  {
+    title: props.goal.name,
+    href: `/financial-goals/${props.goal.id}`,
+  },
+  {
+    title: 'Edit',
+    href: `/financial-goals/${props.goal.id}/edit`,
+  },
+]
+
 const form = ref({
   name: '',
   category_id: null,
@@ -231,6 +284,13 @@ const selectedCurrencyDecimals = computed(() => {
   
   const currency = props.currencies.find(c => c.id === form.value.currency_id)
   return currency?.decimals || 2
+})
+
+const selectedCurrencySymbol = computed(() => {
+  if (!form.value.currency_id) return '$'
+  
+  const currency = props.currencies.find(c => c.id === form.value.currency_id)
+  return currency?.symbol || '$'
 })
 
 const yearOptions = computed(() => {
