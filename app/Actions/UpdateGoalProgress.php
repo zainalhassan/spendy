@@ -17,6 +17,7 @@ class UpdateGoalProgress
     {
         $this->validate($data);
         
+        // Authorization is handled in the controller
         // Check if progress for this month/year already exists
         $existingProgress = $goal->progress()
             ->where('month', $data['month'])

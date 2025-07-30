@@ -28,7 +28,6 @@ class UpdateFinancialGoalRequest extends FormRequest
             'currency_id' => 'required|exists:currencies,id',
             'target_amount' => 'required|numeric|min:0.01',
             'start_amount' => 'nullable|numeric|min:0',
-            'expected_amount' => 'nullable|numeric|min:0',
             'description' => 'nullable|string|max:1000',
         ];
     }
@@ -50,8 +49,6 @@ class UpdateFinancialGoalRequest extends FormRequest
             'target_amount.min' => 'The target amount must be greater than 0.',
             'start_amount.numeric' => 'The starting amount must be a valid number.',
             'start_amount.min' => 'The starting amount cannot be negative.',
-            'expected_amount.numeric' => 'The expected amount must be a valid number.',
-            'expected_amount.min' => 'The expected amount cannot be negative.',
             'description.max' => 'The description cannot exceed 1000 characters.',
         ];
     }
@@ -65,7 +62,6 @@ class UpdateFinancialGoalRequest extends FormRequest
             'name' => 'goal name',
             'target_amount' => 'target amount',
             'start_amount' => 'starting amount',
-            'expected_amount' => 'expected amount',
         ];
     }
 }

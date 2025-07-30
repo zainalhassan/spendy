@@ -20,14 +20,14 @@
 
           <!-- Year Selector -->
           <div class="flex items-center gap-4">
-            <label for="year" class="text-sm font-medium text-gray-700 dark:text-gray-300">Year:</label>
+            <label for="year" class="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Year:</label>
             <Dropdown
               v-model="selectedYear"
               :options="yearOptions"
               option-label="label"
               option-value="value"
-              placeholder="Select Year"
-              class="w-32"
+              placeholder="All Years"
+              class="w-40"
               @change="onYearChange"
             />
           </div>
@@ -127,11 +127,13 @@ const breadcrumbs = [
   },
 ]
 
-const selectedYear = ref(props.currentYear)
+const selectedYear = ref(null)
 
 const yearOptions = computed(() => {
   const currentYear = new Date().getFullYear()
-  const years = []
+  const years = [
+    { label: 'All Years', value: null }
+  ]
   for (let year = currentYear + 2; year >= currentYear - 2; year--) {
     years.push({
       label: year.toString(),
@@ -154,14 +156,16 @@ const editGoal = (goal) => {
 }
 
 const onYearChange = () => {
-  router.get('/financial-goals', { year: selectedYear.value }, {
+  const params = selectedYear.value ? { year: selectedYear.value } : {}
+  router.get('/financial-goals', params, {
     preserveState: true,
     preserveScroll: true
   })
 }
 
 onMounted(() => {
-  selectedYear.value = props.currentYear
+  // If a specific year is provided in props, use it; otherwise show all years
+  selectedYear.value = props.currentYear || null
 })
 </script>
 

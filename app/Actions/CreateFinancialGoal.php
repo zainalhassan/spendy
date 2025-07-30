@@ -19,6 +19,7 @@ class CreateFinancialGoal
     {
         $this->validate($data);
         
+        // Authorization is handled in the controller
         return $this->goalService->createGoal($user, $data);
     }
 

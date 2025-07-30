@@ -63,45 +63,66 @@
                     </div>
                   </div>
 
-                  <!-- Progress Bars -->
-                  <div class="space-y-6">
-                    <!-- Main Progress -->
-                    <div>
-                      <div class="flex justify-between items-center mb-3">
-                        <span class="text-lg font-semibold text-gray-900 dark:text-white">Your Progress</span>
+                  <!-- Combined Progress Bar -->
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <span class="text-lg font-semibold text-gray-900 dark:text-white">Your Progress</span>
+                      <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                          Expected: {{ goal.expected_percentage.toFixed(1) }}%
+                        </span>
                         <span class="text-lg font-bold text-gray-900 dark:text-white">{{ goal.progress_percentage.toFixed(1) }}%</span>
                       </div>
-                      <div class="relative">
-                        <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
-                          <div 
-                            class="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out"
-                            :style="{ width: goal.progress_percentage + '%' }"
-                          ></div>
-                        </div>
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
-                      </div>
                     </div>
-
-                    <!-- Expected Progress -->
-                    <div v-if="goal.expected_percentage > 0">
-                      <div class="flex justify-between items-center mb-3">
-                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-300">Expected Progress</span>
-                        <span class="text-lg font-bold text-gray-700 dark:text-gray-300">{{ goal.expected_percentage.toFixed(1) }}%</span>
-                      </div>
-                      <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-3">
+                    <div class="relative">
+                      <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
+                        <!-- Expected Progress (background) -->
                         <div 
-                          class="bg-gradient-to-r from-gray-400 to-gray-500 h-3 rounded-full"
+                          class="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-500 rounded-full transition-all duration-1000 ease-out"
                           :style="{ width: goal.expected_percentage + '%' }"
                         ></div>
+                        <!-- Actual Progress (foreground) -->
+                        <div 
+                          class="relative bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 h-6 rounded-full transition-all duration-1000 ease-out"
+                          :style="{ width: goal.progress_percentage + '%' }"
+                        ></div>
                       </div>
+                      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                     </div>
                   </div>
 
                   <!-- Status Indicator -->
                   <div class="mt-8 text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-full">
-                      <i class="pi pi-info-circle text-blue-600 dark:text-blue-400"></i>
-                      <span class="font-semibold text-blue-800 dark:text-blue-300">On Track</span>
+                    <div 
+                      class="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+                      :class="{
+                        'bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30': goal.progress_percentage >= goal.expected_percentage,
+                        'bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/30 dark:to-yellow-800/30': goal.progress_percentage < goal.expected_percentage && goal.progress_percentage >= goal.expected_percentage * 0.8,
+                        'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30': goal.progress_percentage < goal.expected_percentage * 0.8
+                      }"
+                    >
+                      <i 
+                        class="text-lg"
+                        :class="{
+                          'pi pi-check-circle text-green-600 dark:text-green-400': goal.progress_percentage >= goal.expected_percentage,
+                          'pi pi-exclamation-triangle text-yellow-600 dark:text-yellow-400': goal.progress_percentage < goal.expected_percentage && goal.progress_percentage >= goal.expected_percentage * 0.8,
+                          'pi pi-times-circle text-red-600 dark:text-red-400': goal.progress_percentage < goal.expected_percentage * 0.8
+                        }"
+                      ></i>
+                      <span 
+                        class="font-semibold"
+                        :class="{
+                          'text-green-800 dark:text-green-300': goal.progress_percentage >= goal.expected_percentage,
+                          'text-yellow-800 dark:text-yellow-300': goal.progress_percentage < goal.expected_percentage && goal.progress_percentage >= goal.expected_percentage * 0.8,
+                          'text-red-800 dark:text-red-300': goal.progress_percentage < goal.expected_percentage * 0.8
+                        }"
+                      >
+                        {{ 
+                          goal.progress_percentage >= goal.expected_percentage ? 'Ahead of Schedule' :
+                          goal.progress_percentage >= goal.expected_percentage * 0.8 ? 'Slightly Behind' :
+                          'Behind Schedule'
+                        }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -136,13 +157,7 @@
                       <i class="pi pi-chart-line text-3xl text-gray-400 dark:text-gray-500"></i>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No progress updates yet</h4>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6">Add your first progress update to start tracking your journey</p>
-                    <Button
-                      label="Add First Update"
-                      icon="pi pi-plus"
-                      @click="showProgressDialog = true"
-                      severity="primary"
-                    />
+                    <p class="text-gray-600 dark:text-gray-300">Add your first progress update to start tracking your journey</p>
                   </div>
                   <div v-else class="space-y-4">
                     <div
@@ -162,14 +177,61 @@
                             <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                               {{ formatProgressAmount(progress.current_amount) }}
                             </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                              Expected: {{ formatProgressAmount(getExpectedAmountForMonth(progress.month, progress.year)) }}
+                            </div>
+                            <!-- Mini Progress Bar for this month -->
+                            <div class="mt-3">
+                              <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                  {{ getProgressPercentage(progress.current_amount, goal.goal.target_amount) }}%
+                                </span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                  {{ getProgressPercentage(getExpectedAmountForMonth(progress.month, progress.year), goal.goal.target_amount) }}%
+                                </span>
+                              </div>
+                              <div class="relative">
+                                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                                  <!-- Expected Progress (background) -->
+                                  <div 
+                                    class="absolute inset-0 bg-gray-300 dark:bg-gray-600 rounded-full transition-all duration-500 ease-out"
+                                    :style="{ width: getProgressPercentage(getExpectedAmountForMonth(progress.month, progress.year), goal.goal.target_amount) + '%' }"
+                                  ></div>
+                                  <!-- Actual Progress (foreground) -->
+                                  <div 
+                                    class="relative bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
+                                    :style="{ width: getProgressPercentage(progress.current_amount, goal.goal.target_amount) + '%' }"
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
                             <div v-if="progress.notes" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic">
                               "{{ progress.notes }}"
                             </div>
                           </div>
                         </div>
-                        <div class="text-right">
-                          <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ formatDate(progress.created_at) }}
+                        <div class="flex items-center gap-3">
+                          <div class="text-right">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                              {{ formatDate(progress.created_at) }}
+                            </div>
+                          </div>
+                          <div class="flex items-center gap-2">
+                            <Button
+                              icon="pi pi-pencil"
+                              text
+                              size="small"
+                              @click="editProgress(progress)"
+                              v-tooltip.top="'Edit Progress'"
+                            />
+                            <Button
+                              icon="pi pi-trash"
+                              text
+                              size="small"
+                              severity="danger"
+                              @click="confirmDeleteProgress(progress)"
+                              v-tooltip.top="'Delete Progress'"
+                            />
                           </div>
                         </div>
                       </div>
@@ -215,8 +277,8 @@
                     <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_start_amount }}</div>
                   </div>
                   
-                  <div v-if="goal.goal.expected_amount">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Expected Amount</label>
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Expected This Month</label>
                     <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ goal.goal.formatted_expected_amount }}</div>
                   </div>
 
@@ -228,45 +290,7 @@
               </template>
             </Card>
 
-            <!-- Quick Actions Card -->
-            <Card class="shadow-xl border-0 overflow-hidden">
-              <template #header>
-                <div class="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-slate-700">
-                  <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                    <i class="pi pi-bolt text-white text-lg"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Quick Actions</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">Manage your goal</p>
-                  </div>
-                </div>
-              </template>
-              <template #content>
-                <div class="p-6 space-y-4">
-                  <Button
-                    label="Update Progress"
-                    icon="pi pi-plus"
-                    @click="showProgressDialog = true"
-                    severity="primary"
-                    class="w-full"
-                  />
-                  <Button
-                    label="Edit Goal"
-                    icon="pi pi-pencil"
-                    @click="navigateToEdit"
-                    severity="secondary"
-                    class="w-full"
-                  />
-                  <Button
-                    label="Delete Goal"
-                    icon="pi pi-trash"
-                    @click="confirmDelete"
-                    severity="danger"
-                    class="w-full"
-                  />
-                </div>
-              </template>
-            </Card>
+
           </div>
         </div>
       </div>
@@ -413,6 +437,152 @@
         </div>
       </template>
     </Dialog>
+
+    <!-- Edit Progress Dialog -->
+    <Dialog
+      v-model:visible="showEditProgressDialog"
+      modal
+      header="Edit Progress"
+      :style="{ width: '500px' }"
+      :closable="false"
+      class="p-dialog-lg"
+    >
+      <form @submit.prevent="submitEditProgress" class="space-y-6">
+        <div class="space-y-3">
+          <label for="edit_current_amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+            Current Amount <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">{{ selectedCurrencySymbol }}</span>
+            <InputNumber
+              id="edit_current_amount"
+              v-model="editProgressForm.current_amount"
+              placeholder="0.00"
+              :min-fraction-digits="selectedCurrencyDecimals"
+              :max-fraction-digits="selectedCurrencyDecimals"
+              class="w-full pl-8 text-lg"
+              :invalid="!!editProgressErrors.current_amount"
+            />
+          </div>
+          <small v-if="editProgressErrors.current_amount" class="text-red-500 font-medium">
+            {{ editProgressErrors.current_amount }}
+          </small>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-3">
+            <label for="edit_month" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Month <span class="text-red-500">*</span>
+            </label>
+            <Dropdown
+              id="edit_month"
+              v-model="editProgressForm.month"
+              :options="monthOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="Select month"
+              class="w-full"
+              :invalid="!!editProgressErrors.month"
+            />
+            <small v-if="editProgressErrors.month" class="text-red-500 font-medium">
+              {{ editProgressErrors.month }}
+            </small>
+          </div>
+
+          <div class="space-y-3">
+            <label for="edit_progress_year" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Year <span class="text-red-500">*</span>
+            </label>
+            <Dropdown
+              id="edit_progress_year"
+              v-model="editProgressForm.year"
+              :options="yearOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="Select year"
+              class="w-full"
+              :invalid="!!editProgressErrors.year"
+            />
+            <small v-if="editProgressErrors.year" class="text-red-500 font-medium">
+              {{ editProgressErrors.year }}
+            </small>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label for="edit_notes" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+            Notes (Optional)
+          </label>
+          <Textarea
+            id="edit_notes"
+            v-model="editProgressForm.notes"
+            placeholder="Add any notes about this progress update..."
+            rows="3"
+            class="w-full"
+            :invalid="!!editProgressErrors.notes"
+          />
+          <small v-if="editProgressErrors.notes" class="text-red-500 font-medium">
+            {{ editProgressErrors.notes }}
+          </small>
+        </div>
+      </form>
+
+      <template #footer>
+        <div class="flex gap-3">
+          <Button
+            label="Cancel"
+            icon="pi pi-times"
+            @click="showEditProgressDialog = false"
+            severity="secondary"
+          />
+          <Button
+            label="Update Progress"
+            icon="pi pi-check"
+            @click="submitEditProgress"
+            :loading="editProgressLoading"
+            severity="primary"
+          />
+        </div>
+      </template>
+    </Dialog>
+
+    <!-- Delete Progress Confirmation Dialog -->
+    <Dialog
+      v-model:visible="showDeleteProgressDialog"
+      modal
+      header="Confirm Delete Progress"
+      :style="{ width: '400px' }"
+    >
+      <div class="text-center py-4">
+        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="pi pi-exclamation-triangle text-2xl text-red-600 dark:text-red-400"></i>
+        </div>
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Progress Record</h4>
+        <p class="text-gray-600 dark:text-gray-300">
+          Are you sure you want to delete the progress record for 
+          <span class="font-semibold">{{ getMonthName(progressToDelete?.month) }} {{ progressToDelete?.year }}</span>? 
+          This action cannot be undone.
+        </p>
+      </div>
+      
+      <template #footer>
+        <div class="flex gap-3">
+          <Button
+            label="Cancel"
+            icon="pi pi-times"
+            @click="showDeleteProgressDialog = false"
+            severity="secondary"
+          />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            @click="deleteProgress"
+            :loading="deleteProgressLoading"
+            severity="danger"
+          />
+        </div>
+      </template>
+    </Dialog>
   </AppLayout>
 </template>
 
@@ -451,9 +621,14 @@ const breadcrumbs = [
 ]
 
 const showProgressDialog = ref(false)
+const showEditProgressDialog = ref(false)
 const showDeleteDialog = ref(false)
+const showDeleteProgressDialog = ref(false)
 const progressLoading = ref(false)
+const editProgressLoading = ref(false)
 const deleteLoading = ref(false)
+const deleteProgressLoading = ref(false)
+const progressToDelete = ref(null)
 
 const progressForm = useForm({
   current_amount: null,
@@ -464,6 +639,17 @@ const progressForm = useForm({
 
 // Destructure errors from the progress form
 const { errors: progressErrors } = progressForm
+
+const editProgressForm = useForm({
+  id: null,
+  current_amount: null,
+  month: null,
+  year: null,
+  notes: '',
+})
+
+// Destructure errors from the edit progress form
+const { errors: editProgressErrors } = editProgressForm
 
 const monthOptions = [
   { label: 'January', value: 1 },
@@ -510,6 +696,46 @@ const formatProgressAmount = (amount) => {
   }).format(amount)
   
   return currency.symbol + formatted
+}
+
+const getExpectedAmountForMonth = (month, year) => {
+  const goal = props.goal.goal
+  
+  // Validate inputs
+  if (!goal || !goal.target_amount || !goal.start_amount || !month || !year) {
+    return goal?.start_amount || 0
+  }
+  
+  // Ensure values are numbers
+  const targetAmount = parseFloat(goal.target_amount) || 0
+  const startAmount = parseFloat(goal.start_amount) || 0
+  const monthNum = parseInt(month) || 1
+  
+  // Handle edge cases
+  if (targetAmount <= startAmount) {
+    return startAmount
+  }
+  
+  const totalMonths = 12
+  const monthsPassed = Math.min(12, Math.max(1, monthNum))
+  const totalToSave = targetAmount - startAmount
+  const monthlySavingsRate = totalToSave / totalMonths
+  const expectedAmount = startAmount + (monthlySavingsRate * monthsPassed)
+  
+  return Math.min(targetAmount, Math.max(startAmount, expectedAmount))
+}
+
+const getProgressPercentage = (current, target) => {
+  // Validate inputs
+  if (!current || !target || target <= 0) {
+    return 0
+  }
+  
+  const currentNum = parseFloat(current) || 0
+  const targetNum = parseFloat(target) || 1
+  
+  const percentage = (currentNum / targetNum) * 100
+  return Math.min(100, Math.max(0, percentage)).toFixed(1)
 }
 
 const getMonthName = (month) => {
@@ -567,6 +793,50 @@ const goBack = () => {
 
 const navigateToEdit = () => {
   router.get(`/financial-goals/${props.goal.goal.id}/edit`)
+}
+
+const editProgress = (progress) => {
+  editProgressForm.id = progress.id
+  editProgressForm.current_amount = progress.current_amount
+  editProgressForm.month = progress.month
+  editProgressForm.year = progress.year
+  editProgressForm.notes = progress.notes || ''
+  showEditProgressDialog.value = true
+}
+
+const submitEditProgress = () => {
+  editProgressLoading.value = true
+  
+  editProgressForm.put(`/financial-goals/${props.goal.goal.id}/progress/${editProgressForm.id}`, {
+    onSuccess: () => {
+      editProgressLoading.value = false
+      showEditProgressDialog.value = false
+      editProgressForm.reset()
+    },
+    onError: () => {
+      editProgressLoading.value = false
+    }
+  })
+}
+
+const confirmDeleteProgress = (progress) => {
+  progressToDelete.value = progress
+  showDeleteProgressDialog.value = true
+}
+
+const deleteProgress = () => {
+  deleteProgressLoading.value = true
+  
+  router.delete(`/financial-goals/${props.goal.goal.id}/progress/${progressToDelete.value.id}`, {
+    onSuccess: () => {
+      deleteProgressLoading.value = false
+      showDeleteProgressDialog.value = false
+      progressToDelete.value = null
+    },
+    onError: () => {
+      deleteProgressLoading.value = false
+    }
+  })
 }
 </script>
 

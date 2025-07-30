@@ -35,7 +35,6 @@ class FinancialGoalFactory extends Factory
             'description' => $this->faker->optional()->sentence(),
             'start_amount' => $startAmount,
             'target_amount' => $targetAmount,
-            'expected_amount' => $this->faker->optional()->randomFloat(2, $startAmount, $targetAmount),
             'year' => $this->faker->numberBetween(2024, 2026),
             'category_id' => \App\Models\Category::inRandomOrder()->first()->id ?? 1,
             'currency_id' => \App\Models\Currency::inRandomOrder()->first()->id ?? 1,

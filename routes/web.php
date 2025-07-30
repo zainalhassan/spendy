@@ -41,10 +41,14 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Financial Goals Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'financial.goal.authorization'])->group(function () {
     Route::resource('financial-goals', FinancialGoalController::class);
     Route::post('financial-goals/{financialGoal}/progress', [FinancialGoalController::class, 'updateProgress'])
         ->name('financial-goals.progress.update');
+    Route::put('financial-goals/{financialGoal}/progress/{progress}', [FinancialGoalController::class, 'updateProgressRecord'])
+        ->name('financial-goals.progress.edit');
+    Route::delete('financial-goals/{financialGoal}/progress/{progress}', [FinancialGoalController::class, 'deleteProgressRecord'])
+        ->name('financial-goals.progress.delete');
 });
 
 require __DIR__.'/settings.php';

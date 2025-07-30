@@ -17,7 +17,6 @@ class FinancialGoal extends Model
         'description',
         'start_amount',
         'target_amount',
-        'expected_amount',
         'year',
         'category_id',
         'currency_id',
@@ -27,7 +26,6 @@ class FinancialGoal extends Model
     protected $casts = [
         'start_amount' => 'decimal:2',
         'target_amount' => 'decimal:2',
-        'expected_amount' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 
@@ -73,27 +71,59 @@ class FinancialGoal extends Model
 
     public function getProgressPercentageAttribute()
     {
-        if ($this->target_amount <= $this->start_amount) {
+        if ($this->target_amount <= 0) {
             return 0;
         }
         
         $current = $this->current_amount;
-        $total = $this->target_amount - $this->start_amount;
-        $progress = $current - $this->start_amount;
         
-        return min(100, max(0, ($progress / $total) * 100));
+        return min(100, max(0, ($current / $this->target_amount) * 100));
     }
 
     public function getExpectedProgressPercentageAttribute()
     {
-        if (!$this->expected_amount || $this->target_amount <= $this->start_amount) {
+        if ($this->target_amount <= 0) {
             return 0;
         }
         
-        $total = $this->target_amount - $this->start_amount;
-        $expected = $this->expected_amount - $this->start_amount;
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        $goalYear = $this->year;
         
-        return min(100, max(0, ($expected / $total) * 100));
+        // Calculate how many months have passed since the start of the goal year
+        $monthsPassed = 0;
+        if ($currentYear >= $goalYear) {
+            $monthsPassed = min(12, $currentMonth);
+        }
+        
+        // Calculate expected amount for current month
+        $expectedAmount = $this->getExpectedAmountForMonth($currentMonth, $currentYear);
+        
+        return min(100, max(0, ($expectedAmount / $this->target_amount) * 100));
+    }
+
+    public function getExpectedAmountForMonth($month, $year = null)
+    {
+        if ($year === null) {
+            $year = $this->year;
+        }
+        
+        // Calculate total months in the goal period (assuming 12 months)
+        $totalMonths = 12;
+        
+        // Calculate how many months have passed (1-12)
+        $monthsPassed = min(12, $month);
+        
+        // Calculate the total amount to save (target - start)
+        $totalToSave = $this->target_amount - $this->start_amount;
+        
+        // Calculate monthly savings rate
+        $monthlySavingsRate = $totalToSave / $totalMonths;
+        
+        // Calculate expected amount for this month
+        $expectedAmount = $this->start_amount + ($monthlySavingsRate * $monthsPassed);
+        
+        return min($this->target_amount, max($this->start_amount, $expectedAmount));
     }
 
     public function getFormattedStartAmountAttribute()
@@ -108,11 +138,28 @@ class FinancialGoal extends Model
 
     public function getFormattedExpectedAmountAttribute()
     {
-        return $this->expected_amount ? $this->currency->format($this->expected_amount) : null;
+        $expectedAmount = $this->getExpectedAmountForMonth(now()->month, now()->year);
+        return $this->currency->format($expectedAmount);
     }
 
     public function getFormattedCurrentAmountAttribute()
     {
         return $this->currency->format($this->current_amount);
+    }
+
+    /**
+     * Check if the given user can manage this goal.
+     */
+    public function canBeManagedBy(User $user): bool
+    {
+        return $user->id === $this->user_id;
+    }
+
+    /**
+     * Check if the given user can view this goal.
+     */
+    public function canBeViewedBy(User $user): bool
+    {
+        return $user->id === $this->user_id;
     }
 }

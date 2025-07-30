@@ -162,15 +162,28 @@ const formatCurrencyWithSymbol = (amount, currency) => {
                                     >
                                         <div class="flex items-center justify-between mb-2">
                                             <h4 class="font-semibold text-gray-900 dark:text-white">{{ goal.name }}</h4>
-                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ (goal.progress_percentage || 0).toFixed(1) }}%</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                    Expected: {{ (goal.expected_progress_percentage || 0).toFixed(1) }}%
+                                                </span>
+                                                <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ (goal.progress_percentage || 0).toFixed(1) }}%</span>
+                                            </div>
                                         </div>
                                         
                                         <div class="mb-2">
-                                            <div class="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-2">
-                                                <div 
-                                                    class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                                                    :style="{ width: (goal.progress_percentage || 0) + '%' }"
-                                                ></div>
+                                            <div class="relative">
+                                                <div class="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-2 overflow-hidden">
+                                                    <!-- Expected Progress (background) -->
+                                                    <div 
+                                                        class="absolute inset-0 bg-gray-300 dark:bg-gray-500 rounded-full transition-all duration-300 ease-out"
+                                                        :style="{ width: (goal.expected_progress_percentage || 0) + '%' }"
+                                                    ></div>
+                                                    <!-- Actual Progress (foreground) -->
+                                                    <div 
+                                                        class="relative bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
+                                                        :style="{ width: (goal.progress_percentage || 0) + '%' }"
+                                                    ></div>
+                                                </div>
                                             </div>
                                         </div>
                                         

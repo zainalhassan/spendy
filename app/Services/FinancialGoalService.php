@@ -11,17 +11,20 @@ class FinancialGoalService
 {
     public function createGoal(User $user, array $data): FinancialGoal
     {
+        // Authorization is handled in the controller
         return $user->financialGoals()->create($data);
     }
 
     public function updateGoal(FinancialGoal $goal, array $data): FinancialGoal
     {
+        // Authorization is handled in the controller
         $goal->update($data);
         return $goal->fresh();
     }
 
     public function deleteGoal(FinancialGoal $goal): bool
     {
+        // Authorization is handled in the controller
         return $goal->delete();
     }
 
@@ -40,6 +43,7 @@ class FinancialGoalService
 
     public function addProgress(FinancialGoal $goal, array $data): GoalProgress
     {
+        // Authorization is handled in the controller
         return $goal->progress()->create($data);
     }
 
@@ -47,6 +51,11 @@ class FinancialGoalService
     {
         $progress->update($data);
         return $progress->fresh();
+    }
+
+    public function deleteProgress(GoalProgress $progress): bool
+    {
+        return $progress->delete();
     }
 
     public function getGoalProgress(FinancialGoal $goal): Collection
@@ -94,6 +103,31 @@ class FinancialGoalService
         
         return [
             'year' => $year,
+            'goals' => $goals,
+            'average_progress' => $activeGoals > 0 ? $totalProgress / $activeGoals : 0,
+            'average_expected' => $activeGoals > 0 ? $totalExpected / $activeGoals : 0,
+            'active_goals_count' => $activeGoals,
+        ];
+    }
+
+    public function getAllGoalsSummary(User $user): array
+    {
+        $goals = $this->getUserGoals($user);
+        
+        $totalProgress = 0;
+        $totalExpected = 0;
+        $activeGoals = 0;
+        
+        foreach ($goals as $goal) {
+            if ($goal->is_active) {
+                $totalProgress += $goal->progress_percentage;
+                $totalExpected += $goal->expected_progress_percentage;
+                $activeGoals++;
+            }
+        }
+        
+        return [
+            'year' => null,
             'goals' => $goals,
             'average_progress' => $activeGoals > 0 ? $totalProgress / $activeGoals : 0,
             'average_expected' => $activeGoals > 0 ? $totalExpected / $activeGoals : 0,

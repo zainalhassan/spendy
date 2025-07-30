@@ -28,4 +28,20 @@ class GoalProgress extends Model
     {
         return $this->belongsTo(FinancialGoal::class);
     }
+
+    /**
+     * Check if the given user can manage this progress record.
+     */
+    public function canBeManagedBy(User $user): bool
+    {
+        return $user->id === $this->financialGoal->user_id;
+    }
+
+    /**
+     * Check if the given user can view this progress record.
+     */
+    public function canBeViewedBy(User $user): bool
+    {
+        return $user->id === $this->financialGoal->user_id;
+    }
 }

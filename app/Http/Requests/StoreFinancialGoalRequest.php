@@ -28,10 +28,21 @@ class StoreFinancialGoalRequest extends FormRequest
             'currency_id' => 'required|exists:currencies,id',
             'target_amount' => 'required|numeric|min:0.01',
             'start_amount' => 'nullable|numeric|min:0',
-            'expected_amount' => 'nullable|numeric|min:0',
             'description' => 'nullable|string|max:1000',
             'year' => 'required|integer|min:2020|max:2030',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $startAmount = $this->input('start_amount', 0);
+            $targetAmount = $this->input('target_amount');
+            
+            if ($targetAmount && $startAmount && $targetAmount <= $startAmount) {
+                $validator->errors()->add('target_amount', 'The target amount must be greater than the starting amount.');
+            }
+        });
     }
 
     /**
@@ -51,8 +62,6 @@ class StoreFinancialGoalRequest extends FormRequest
             'target_amount.min' => 'The target amount must be greater than 0.',
             'start_amount.numeric' => 'The starting amount must be a valid number.',
             'start_amount.min' => 'The starting amount cannot be negative.',
-            'expected_amount.numeric' => 'The expected amount must be a valid number.',
-            'expected_amount.min' => 'The expected amount cannot be negative.',
             'description.max' => 'The description cannot exceed 1000 characters.',
             'year.required' => 'A year is required.',
             'year.integer' => 'The year must be a valid number.',
@@ -70,7 +79,6 @@ class StoreFinancialGoalRequest extends FormRequest
             'name' => 'goal name',
             'target_amount' => 'target amount',
             'start_amount' => 'starting amount',
-            'expected_amount' => 'expected amount',
         ];
     }
 }
